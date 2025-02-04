@@ -101,7 +101,7 @@ def consolidate_gemini_outputs(extracted_data):
 
 def chat_with_data(user_query, dataframe):
     """Allows users to query the dataframe using Gemini AI."""
-    model = genai.GenerativeModel("gemini-2.0-flash-exp")
+    model = genai.GenerativeModel("gemini-1.5-pro")
     chat_session = model.start_chat(
         history=[
             {"role": "user", "parts": [f"Given the following baseball game statistics dataframe, answer the user's query:\n{dataframe.to_json(orient='records')}\n\nQuery: {user_query}"]}
