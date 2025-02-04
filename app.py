@@ -10,11 +10,10 @@ from scenedetect import SceneManager, open_video, ContentDetector
 
 # Configure Gemini API
 genai.configure(api_key=os.environ["GEMINI_API_KEY"])
-# genai.configure(api_key="")
 
 # Settings Page
 st.sidebar.header("Settings")
-max_images = st.sidebar.slider("Max Frames to Extract", min_value=1, max_value=20, value=10)
+max_images = st.sidebar.slider("Max Frames to Extract", min_value=1, max_value=20, value=5)
 
 def upload_to_gemini(path, mime_type=None):
     """Uploads the given file to Gemini for processing."""
