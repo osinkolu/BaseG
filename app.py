@@ -101,7 +101,7 @@ def consolidate_gemini_outputs(extracted_data):
 
 def chat_with_data(user_query, dataframe):
     """Allows users to query the dataframe using Gemini AI."""
-    model = genai.GenerativeModel("gemini-1.5-pro")
+    model = genai.GenerativeModel("gemini-2.0-flash-exp")
     chat_session = model.start_chat(
         history=[
             {"role": "user", "parts": [f"Given the following baseball game statistics dataframe, answer the user's query:\n{dataframe.to_json(orient='records')}\n\nQuery: {user_query}"]}
@@ -117,6 +117,8 @@ st.write("Upload a baseball game video or image, and we’ll extract key statist
 uploaded_file = st.file_uploader("Upload Baseball Video/Image", type=["mp4", "avi", "mov", "jpg", "png", "jpeg"])
 
 if uploaded_file is not None:
+    st.session_state.df = None  # Reset dataframe when a new file is uploaded
+    
     file_extension = uploaded_file.name.split(".")[-1].lower()
     
     if file_extension in ["mp4", "avi", "mov"]:
@@ -135,21 +137,22 @@ if uploaded_file is not None:
             media_path = temp_image.name
         frames = [(media_path, None, None)]
     
+    with st.expander("View Extracted Scenes"):
+        for frame_path, frame_number, timestamp in frames:
+            st.image(frame_path, caption=f"Frame: {frame_number}, Timestamp: {timestamp}s", use_container_width=True)
+    
     st.write("Extracting baseball statistics using Gemini AI...")
     extracted_stats = extract_baseball_stats_with_gemini(frames)
     consolidated_data = consolidate_gemini_outputs(extracted_stats)
-    
     if consolidated_data:
-        df = pd.DataFrame(consolidated_data)
-        st.write("Extracted baseball statistics in tabular format:")
-        st.dataframe(df)
-        
-        st.write("### Chat with Your Data")
-        user_query = st.text_input("Ask a question about the extracted stats:")
-        if user_query:
-            answer = chat_with_data(user_query, df)
-            st.write("**Response:**", answer)
-    else:
-        st.write("Error parsing consolidated output: Invalid JSON format.")
-
-    st.success("Processing complete! The extracted statistics are displayed above.")
+        st.session_state.df = pd.DataFrame(consolidated_data)
+    
+if "df" in st.session_state and st.session_state.df is not None:
+    st.write("Extracted baseball statistics in tabular format:")
+    st.dataframe(st.session_state.df)
+    
+    st.write("### Chat with Your Data")
+    user_query = st.text_input("Ask a question about the extracted stats:")
+    if user_query:
+        answer = chat_with_data(user_query, st.session_state.df)
+        st.write("**Response:**", answer)
