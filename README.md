@@ -104,7 +104,7 @@ This project is open-source under the MIT License.
 ## Acknowledgments
 
 - **Google Cloud x MLB Hackathon** for organizing this challenge.
-- **OpenAI & Google AI** for providing powerful AI tools.
+- **Google AI** for providing powerful AI tools.
 
 ---
 ✨ Built with AI & Love for Baseball ⚾❤️
